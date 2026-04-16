@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAPA 주파수전략팀 R&D 큐레이션 대시보드</title>
+    <style>
+        body { font-family: 'Malgun Gothic', sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        h1 { text-align: center; color: #004d99; border-bottom: 2px solid #004d99; padding-bottom: 10px; }
+        .date-info { text-align: right; color: #666; margin-bottom: 20px; }
+        .part-section { background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .part-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
+        .part-title { font-size: 1.2em; font-weight: bold; color: #004d99; margin: 0; }
+        .part-members { font-size: 0.9em; color: #555; background: #e6f2ff; padding: 4px 8px; border-radius: 4px; }
+        .project-card { border-left: 4px solid #ff9900; background: #fdfbf7; padding: 15px; margin-bottom: 15px; border-radius: 4px; }
+        .project-title { font-weight: bold; font-size: 1.1em; margin: 0 0 5px 0; }
+        .project-title a { text-decoration: none; color: #333; }
+        .project-title a:hover { color: #004d99; text-decoration: underline; }
+        .project-meta { font-size: 0.9em; color: #666; margin-bottom: 10px; }
+        .project-reason { font-size: 0.95em; color: #2c7a7b; background: #e6fffa; padding: 10px; border-radius: 4px; margin: 0; }
+        .loading { text-align: center; font-size: 1.2em; color: #666; padding: 50px; }
+        .no-data { color: #999; font-style: italic; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📡 RAPA 주파수전략팀 주간 R&D 맞춤형 분석</h1>
+    <div class="date-info" id="currentDate"></div>
+    
+    <div id="loading" class="loading">NTIS 공고 데이터를 분석 중입니다. 잠시만 기다려주세요...⏳</div>
+    <div id="dashboard"></div>
+</div>
+
+<script>
+    // 오늘 날짜 표시
+    document.getElementById('currentDate').innerText = "업데이트 기준: " + new Date().toLocaleDateString('ko-KR');
+
+    // 1. 팀별 업무 키워드 및 전략 설정
+    const TEAM_STRATEGY = {
+        "산업생활 부": {
+            keywords: ["사회문제", "규제샌드박스", "추경", "생활전파", "중기재정", "대체사업"],
+            goal: "26년 추경 대응 및 사회문제해결형 사업 발굴",
+            members: "담당: 서지영 차장 외"
+        },
+        "비면허실증 부": {
+            keywords: ["비면허", "실증", "규제개선", "한전", "철도", "전력", "에너지"],
+            goal: "한전/철도청 연계 전파규제개선 및 신규 사업화",
+            members: "담당: 김유혜 차장 외"
+        },
+        "TVWS/고속도로 부": {
+            keywords: ["TVWS", "도로공사", "고속도로", "연구용역", "공동사용"],
+            goal: "TVWS 활성화 및 도로공사 연구용역 제안",
+            members: "담당: 유정훈 과장, 김대웅 과장"
+        }
+    };
+
+    // 2. RSS 데이터 가져오기 및 분석
+    async function fetchAndAnalyzeRss() {
+        // CORS 우회를 위해 무료 프록시(allorigins) 사용
+        const targetUrl = encodeURIComponent("http://www.ntis.go.kr/rndgate/unRndRss.xml?prt=100&bbs=true");
+        const proxyUrl = `https://api.allorigins.win/raw?url=${targetUrl}`;
+        
+        try {
+            const response = await fetch(proxyUrl);
+            const text = await response.text();
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(text, "text/xml");
+            const items = xmlDoc.querySelectorAll("item");
+            
+            // 일주일 전 날짜 계산
+            const sevenDaysAgo = new Date();
+            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+            let report = [];
+
+            items.forEach(item => {
+                const title = item.querySelector("title")?.textContent || "";
+                const link = item.querySelector("link")?.textContent || "#";
+                const description = item.querySelector("description")?.textContent || "";
+                const pubDateStr = item.querySelector("pubDate")?.textContent || "";
+                const agency = item.querySelector("category")?.textContent || "알 수 없음";
+
+                // 날짜 파싱 (예: 20240101 -> Date 객체)
+                let pubDate = new Date();
+                if (pubDateStr.length === 8) {
+                    pubDate = new Date(pubDateStr.substring(0,4), pubDateStr.substring(4,6)-1, pubDateStr.substring(6,8));
+                }
+
+                if (pubDate >= sevenDaysAgo) {
+                    const contentToScan = (title + " " + description).toLowerCase();
+
+                    for (const [part, info] of Object.entries(TEAM_STRATEGY)) {
+                        const matchedKeywords = info.keywords.filter(kw => contentToScan.includes(kw.toLowerCase()));
+                        
+                        if (matchedKeywords.length > 0) {
+                            report.push({
+                                part: part,
+                                title: title,
+                                agency: agency,
+                                link: link,
+                                reason: `[${matchedKeywords.join(', ')}] 키워드 포함. ${info.goal} 목표에 부합함.`,
+                                date: pubDateStr
+                            });
+                        }
+                    }
+                }
+            });
+
+            renderDashboard(report);
+
+        } catch (error) {
+            console.error("데이터 로드 실패:", error);
+            document.getElementById('loading').innerHTML = "<span style='color:red;'>데이터를 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요.</span>";
+        }
+    }
+
+    // 3. 화면에 HTML 렌더링
+    function renderDashboard(report) {
+        const dashboard = document.getElementById('dashboard');
+        document.getElementById('loading').style.display = 'none';
+        
+        for (const [part, info] of Object.entries(TEAM_STRATEGY)) {
+            const partItems = report.filter(item => item.part === part);
+            
+            let html = `
+                <div class="part-section">
+                    <div class="part-header">
+                        <h2 class="part-title">🔵 ${part}</h2>
+                        <span class="part-members">${info.members}</span>
+                    </div>
+            `;
+
+            if (partItems.length === 0) {
+                html += `<p class="no-data">이번 주에는 적합한 신규 공고가 없습니다.</p>`;
+            } else {
+                partItems.forEach(item => {
+                    html += `
+                        <div class="project-card">
+                            <h3 class="project-title"><a href="${item.link}" target="_blank">${item.title}</a></h3>
+                            <div class="project-meta">공고기관: ${item.agency} | 공고일: ${item.date}</div>
+                            <p class="project-reason">💡 <b>추천사유:</b> ${item.reason}</p>
+                        </div>
+                    `;
+                });
+            }
+
+            html += `</div>`;
+            dashboard.innerHTML += html;
+        }
+    }
+
+    // 스크립트 실행
+    fetchAndAnalyzeRss();
+</script>
+
+</body>
+</html>
