@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>홈 방탈출 게임</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 20px; background-color: #f0f8ff; }
+        .stage { display: none; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .active { display: block; }
+        input { padding: 10px; font-size: 16px; width: 80%; margin-top: 10px; }
+        button { padding: 10px 20px; margin-top: 10px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🏠 홈 방탈출 시작!</h1>
+
+    <!-- 1번 문제 -->
+    <div id="stage1" class="stage active">
+        <h3>[문제 1] 신발장을 확인해봐!</h3>
+        <p>왼쪽 신발이 1개, 오른쪽 신발이 2개 있다면?<br>(정답 예시: 12)</p>
+        <input type="text" id="ans1">
+        <button onclick="check(1, '12')">확인</button>
+    </div>
+
+    <!-- 2번 문제 -->
+    <div id="stage2" class="stage">
+        <h3>[문제 2] 거울의 마법</h3>
+        <p>거울 앞에 있는 쪽지를 읽고 단어를 입력해!</p>
+        <input type="text" id="ans2">
+        <button onclick="check(2, '사과')">확인</button>
+    </div>
+
+    <!-- 마지막 성공 화면 -->
+    <div id="clear" class="stage">
+        <h2>🎉 탈출 성공! 🎉</h2>
+        <p>최종 비밀번호는 <b>[ 20260509 ]</b> 야!<br>냉장고를 열어봐!</p>
+    </div>
+
+    <script>
+        function check(stageNum, correctAns) {
+            const userAns = document.getElementById('ans' + stageNum).value;
+            if (userAns === correctAns) {
+                document.getElementById('stage' + stageNum).classList.remove('active');
+                const nextStage = document.getElementById('stage' + (stageNum + 1));
+                if (nextStage) {
+                    nextStage.classList.add('active');
+                } else {
+                    document.getElementById('clear').classList.add('active');
+                }
+            } else {
+                alert("땡! 다시 생각해보자!");
+            }
+        }
+    </script>
+</body>
+</html>
