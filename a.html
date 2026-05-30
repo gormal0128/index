@@ -269,10 +269,14 @@ function showReveal(i) {
       '<div style="margin-top: 14px; text-align: center;">' +
         '<a href="https://drive.google.com/file/d/' + d.videoId + '/view?usp=drivesdk" target="_blank" style="color: #c0647a; font-size: 0.8rem; text-decoration: underline;">🔗 영상 원본 링크 열기</a>' +
       '</div>';
- } else if (d.extra === 'gif' && d.gifId) {
+  } else if (d.extra === 'gif' && d.gifId) {
+    // 🛠️ 구글 드라이브 GIF 썸네일 직접 가져오기 방식으로 변경! (sz=w1000 추가로 고해상도 유지)
     extra.innerHTML =
-      '<div style="width: 100%; margin-top: 1.2rem; display: flex; justify-content: center;">' +
-        '<img src="https://drive.google.com/uc?export=view&id=' + d.gifId + '" style="width: 100%; max-width: 440px; border-radius: 14px; box-shadow: 0 6px 24px rgba(192,100,122,0.15);" alt="움직이는 추억" />' +
+      '<div style="width: 100%; margin-top: 1.2rem; display: flex; justify-content: center; flex-direction: column; align-items: center;">' +
+        '<img src="https://drive.google.com/thumbnail?id=' + d.gifId + '&sz=w1000" style="width: 100%; max-width: 440px; border-radius: 14px; box-shadow: 0 6px 24px rgba(192,100,122,0.15);" alt="움직이는 추억" />' +
+        '<div style="margin-top: 14px; text-align: center;">' +
+          '<a href="https://drive.google.com/file/d/' + d.gifId + '/view?usp=drivesdk" target="_blank" style="color: #c0647a; font-size: 0.8rem; text-decoration: underline;">🔗 GIF 원본 링크 열기</a>' +
+        '</div>' +
       '</div>';
   } else if (d.extra === 'photo') {
     let saved = null;
