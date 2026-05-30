@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>우리의 이야기 💌</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Noto+Serif+KR:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  min-height: 100vh;
+  background: linear-gradient(160deg, #fff8f0 0%, #fdf2f8 50%, #f0f4ff 100%);
+  font-family: 'Noto Serif KR', serif;
+  overflow-x: hidden;
+}
+#petals-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+.petal { position: absolute; opacity: 0; pointer-events: none; animation: petalFall linear; }
+@keyframes petalFall {
+  0%   { opacity: 0; transform: translateY(-20px) rotate(0deg); }
+  10%  { opacity: 0.7; }
+  90%  { opacity: 0.5; }
+  100% { opacity: 0; transform: translateY(110vh) rotate(360deg); }
+}
+.test-banner {
+  position: fixed; top: 0; left: 0; right: 0;
+  background: #ff9800; color: white;
+  text-align: center; font-size: 0.75rem;
+  padding: 6px; z-index: 100; letter-spacing: 0.05em;
+}
+.screen { display: none; padding: 2.5rem 1.5rem; position: relative; z-index: 1; min-height: 100vh; flex-direction: column; align-items: center; justify-content: center; }
+.screen.active { display: flex; }
+.main-title { font-family: 'Playfair Display', serif; font-style: italic; font-size: 2.2rem; color: #c0647a; text-align: center; margin-bottom: 0.3rem; margin-top: 1.5rem; }
+.main-subtitle { font-size: 0.8rem; color: #a07090; text-align: center; letter-spacing: 0.12em; margin-bottom: 2.5rem; }
+.envelope-row { display: flex; gap: 1.4rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2rem; }
+.envelope-card { width: 140px; cursor: pointer; text-align: center; transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1); position: relative; }
+.envelope-card:hover { transform: translateY(-7px) scale(1.05); }
+.envelope-card.done .env-img-wrap img { filter: hue-rotate(100deg) saturate(0.6); }
+.env-img-wrap { width: 130px; height: 92px; margin: 0 auto 0.6rem; position: relative; }
+.env-img-wrap img { width: 100%; height: 100%; object-fit: contain; }
+.env-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.5rem; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.12)); }
+.env-check-badge { position: absolute; top: -6px; right: -2px; background: #66bb6a; color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+.env-date { font-size: 0.72rem; color: #a07090; margin-bottom: 0.15rem; }
+.env-label { font-size: 0.78rem; color: #c0647a; font-weight: 600; }
+.date-note { font-size: 0.75rem; color: #b090a0; text-align: center; line-height: 1.9; max-width: 280px; }
+#screen-reveal { background: linear-gradient(160deg, #fff0f5 0%, #fdf6ff 100%); }
+.reveal-anim { animation: revealIn 0.75s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+@keyframes revealIn { from { opacity: 0; transform: scale(0.72) translateY(24px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+.reveal-day-badge { background: #c0647a; color: white; font-size: 0.72rem; padding: 5px 16px; border-radius: 20px; margin-bottom: 1.2rem; letter-spacing: 0.1em; }
+.letter-card { background: white; border: 1px solid #f0d0da; border-radius: 18px; padding: 1.8rem 1.6rem; width: 100%; max-width: 380px; box-shadow: 0 8px 36px rgba(192,100,122,0.12); position: relative; }
+.letter-card::before { content: '❝'; font-family: 'Playfair Display', serif; font-size: 3rem; color: #f0d0da; position: absolute; top: 0.5rem; left: 1rem; line-height: 1; }
+.letter-title { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.2rem; color: #c0647a; text-align: center; margin-bottom: 1rem; padding-top: 0.6rem; }
+.letter-body { font-size: 0.86rem; color: #5a3545; line-height: 2.1; text-align: center; white-space: pre-line; }
+.video-wrap { width: 100%; max-width: 380px; margin-top: 1.2rem; border-radius: 14px; overflow: hidden; box-shadow: 0 6px 24px rgba(192,100,122,0.15); }
+.video-wrap iframe { width: 100%; height: 213px; border: none; display: block; }
+.photo-placeholder { width: 100%; max-width: 380px; height: 170px; background: linear-gradient(135deg, #fde8ef, #f3e8fd); border-radius: 14px; border: 2px dashed #e8b4c0; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 1.2rem; cursor: pointer; overflow: hidden; transition: background 0.2s; }
+.photo-placeholder:hover { background: linear-gradient(135deg, #fbd5e3, #ead5fb); }
+.photo-placeholder img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
+.photo-label { font-size: 0.75rem; color: #c0a0b0; margin-top: 0.5rem; }
+.photo-icon { font-size: 1.8rem; margin-bottom: 0.3rem; }
+input[type="file"] { display: none; }
+.reveal-btn { margin-top: 1.6rem; padding: 0.65rem 2.2rem; background: linear-gradient(135deg, #e87a9a, #c0647a); color: white; border: none; border-radius: 30px; font-family: 'Noto Serif KR', serif; font-size: 0.85rem; cursor: pointer; letter-spacing: 0.06em; transition: opacity 0.2s; }
+.reveal-btn:hover { opacity: 0.85; }
+.reset-btn { background: none; border: 1px dashed #d0a0b0; color: #b08090; border-radius: 20px; padding: 5px 16px; font-size: 0.72rem; cursor: pointer; margin-top: 0.8rem; font-family: 'Noto Serif KR', serif; }
+.ending-glow { font-family: 'Playfair Display', serif; font-style: italic; font-size: 2rem; color: #c0647a; text-align: center; line-height: 1.5; margin-bottom: 1rem; animation: gentlePulse 2.5s ease-in-out infinite; }
+@keyframes gentlePulse { 0%,100%{opacity:1;} 50%{opacity:0.65;} }
+.ending-msg { font-size: 0.85rem; color: #a07090; text-align: center; line-height: 2.1; max-width: 300px; margin-bottom: 1.5rem; }
+.hearts-row { font-size: 1.6rem; letter-spacing: 0.5rem; margin-bottom: 1.5rem; animation: heartBeat 1.8s ease-in-out infinite; }
+@keyframes heartBeat { 0%,100%{transform:scale(1);} 50%{transform:scale(1.12);} }
+
+.audio-control {
+  position: fixed; bottom: 24px; right: 24px;
+  background: white; border: 1px solid #f0d0da;
+  border-radius: 50%; width: 46px; height: 46px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba(192,100,122,0.2);
+  cursor: pointer; z-index: 200; font-size: 1.2rem;
+  transition: transform 0.2s, background 0.2s;
+}
+.audio-control:hover { transform: scale(1.08); background: #fff0f5; }
+.audio-control.playing { animation: spinMusic 4s linear infinite; }
+@keyframes spinMusic { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="test-banner">테스트 버전 — 날짜 제한 없이 모든 봉투 열림</div>
+<div id="petals-container"></div>
+
+<div id="audio-btn" class="audio-control" onclick="toggleBGM()">🎵</div>
+
+<div id="screen-main" class="screen active">
+  <div class="main-title">우리의 이야기</div>
+  <div class="main-subtitle">✦ &nbsp; Our Love Story &nbsp; ✦</div>
+  <div class="envelope-row" id="envelope-row"></div>
+  <div class="date-note" id="date-note">탭해서 봉투를 열어보세요 💌</div>
+  <button class="reset-btn" onclick="resetAll()">🔄 처음부터 다시 보기</button>
+</div>
+
+<div id="screen-reveal" class="screen">
+  <div class="reveal-day-badge" id="reveal-badge"></div>
+  <div class="letter-card reveal-anim">
+    <div class="letter-title" id="letter-title"></div>
+    <div class="letter-body" id="letter-body"></div>
+  </div>
+  <div id="reveal-extra"></div>
+  <button class="reveal-btn" onclick="showMain()">봉투 목록으로 →</button>
+</div>
+
+<div id="screen-ending" class="screen">
+  <div class="hearts-row">🌸 💗 🌸</div>
+  <div class="ending-glow">사랑해요,<br>영원히</div>
+  <div class="ending-msg">세 개의 봉투를 모두 열었어요 💌<br>우리가 함께한 모든 순간이<br>세상에서 가장 소중한 이야기예요.</div>
+  <div class="hearts-row">✨ 💍 ✨</div>
+  <button class="reveal-btn" onclick="showMain()">처음으로 돌아가기</button>
+</div>
+
+<script>
+const ENVELOPE_IMG = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMjgwIiB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI4MCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImVudkdyYWQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZmZmMGY1Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I2ZkZThmMCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZmxhcEdyYWQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZjljY2Q4Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I2YwYThiZSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ic2VhbEdyYWQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZTg3YTlhIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I2MwNTQ3YSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxmaWx0ZXIgaWQ9InNoYWRvdyI+CiAgICAgIDxmZURyb3BTaGFkb3cgZHg9IjAiIGR5PSI0IiBzdGREZXZpYXRpb249IjgiIGZsb29kLWNvbG9yPSIjYzA2NDdhIiBmbG9vZC1vcGFjaXR5PSIwLjE4Ii8+CiAgICA8L2ZpbHRlcj4KICA8L2RlZnM+CgogIDwhLS0gZW52ZWxvcGUgYm9keSAtLT4KICA8cmVjdCB4PSIyMCIgeT0iNjAiIHdpZHRoPSIzNjAiIGhlaWdodD0iMjAwIiByeD0iMTIiIGZpbGw9InVybCgjZW52R3JhZCkiIHN0cm9rZT0iI2U4YjRjOCIgc3Ryb2tlLXdpZHRoPSIxLjUiIGZpbHRlcj0idXJsKCNzaGFkb3cpIi8+CgogIDwhLS0gYm90dG9tIGZvbGQgbGluZXMgLS0+CiAgPGxpbmUgeDE9IjIwIiB5MT0iMjYwIiB4Mj0iMjAwIiB5Mj0iMTYwIiBzdHJva2U9IiNmMGMwZDAiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iMC42Ii8+CiAgPGxpbmUgeDE9IjM4MCIgeTE9IjI2MCIgeDI9IjIwMCIgeTI9IjE2MCIgc3Ryb2tlPSIjZjBjMGQwIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9IjAuNiIvPgoKICA8IS0tIHNpZGUgZm9sZHMgLS0+CiAgPGxpbmUgeDE9IjIwIiB5MT0iNjAiIHgyPSIyMDAiIHkyPSIxNjAiIHN0cm9rZT0iI2YwYzBkMCIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIwLjUiLz4KICA8bGluZSB4MT0iMzgwIiB5MT0iNjAiIHgyPSIyMDAiIHkyPSIxNjAiIHN0cm9rZT0iI2YwYzBkMCIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIwLjUiLz4KCiAgPCEtLSBmbGFwIChvcGVuKSAtLT4KICA8cG9seWdvbiBwb2ludHM9IjIwLDYwIDM4MCw2MCAyMDAsMTY1IiBmaWxsPSJ1cmwoI2ZsYXBHcmFkKSIgc3Ryb2tlPSIjZThiNGM4IiBzdHJva2Utd2lkdGg9IjEuNSIvPgoKICA8IS0tIGZsYXAgaW5uZXIgc2hhZG93IGxpbmUgLS0+CiAgPGxpbmUgeDE9IjIwIiB5MT0iNjAiIHgyPSIzODAiIHkyPSI2MCIgc3Ryb2tlPSIjZThhMGI4IiBzdHJva2Utd2lkdGg9IjEuNSIvPgoKICA8IS0tIHdheCBzZWFsIGNpcmNsZSAtLT4KICA8Y2lyY2xlIGN4PSIyMDAiIGN5PSIxNDgiIHI9IjI4IiBmaWxsPSJ1cmwoI3NlYWxHcmFkKSIgc3Ryb2tlPSIjZmZmMGY1IiBzdHJva2Utd2lkdGg9IjIuNSIgZmlsdGVyPSJ1cmwoI3NoYWRvdykiLz4KCiAgPCEtLSBoZWFydCBpbiBzZWFsIC0tPgogIDxwYXRoIGQ9Ik0yMDAgMTU4IEMyMDAgMTU4IDE4NSAxNDcgMTg1IDE0MCBDMTg1IDEzNSAxOTAgMTMyIDE5NSAxMzUgQzE5NyAxMzYgMTk5IDEzOCAyMDAgMTQwIEMyMDEgMTM4IDIwMyAxMzYgMjA1IDEzNSBDMjEwIDEzMiAyMTUgMTM1IDIxNSAxNDAgQzIxNSAxNDcgMjAwIDE1OCAyMDAgMTU4WiIgZmlsbD0id2hpdGUiIG9wYWNpdHk9IjAuOTUiLz4KCiAgPCEtLSBzbWFsbCBkZWNvcmF0aXZlIGRvdHMgb24gZW52ZWxvcGUgLS0+CiAgPGNpcmNsZSBjeD0iNjAiIGN5PSIyMjAiIHI9IjIuNSIgZmlsbD0iI2YwYjBjOCIgb3BhY2l0eT0iMC41Ii8+CiAgPGNpcmNsZSBjeD0iODAiIGN5PSIyMzUiIHI9IjEuOCIgZmlsbD0iI2YwYjBjOCIgb3BhY2l0eT0iMC40Ii8+CiAgPGNpcmNsZSBjeD0iMzIwIiBjeT0iMjE1IiByPSIyLjUiIGZpbGw9IiNmMGIwYzgiIG9wYWNpdHk9IjAuNSIvPgogIDxjaXJjbGUgY3g9IjM0MCIgY3k9IjIzMiIHI9IjEuOCIgZmlsbD0iI2YwYjBjOCIgb3BhY2l0eT0iMC40Ii8+CgogIDwhLS0gdG9wIHJpYmJvbiBkZWNvcmF0aW9uIC0tPgogIDxwYXRoIGQ9Ik0xNzAgMzAgUTIwMCAxMCAyMzAgMzAgUTIwMCA1MCAxNzAgMzBaIiBmaWxsPSIjZjljY2Q4IiBvcGFjaXR5PSIwLjciLz4KICA8Y2lyY2xlIGN4PSIyMDAiIGN5PSIzMCIgcj0iNSIgZmlsbD0iI2U4N2E5YSIvPgogIDwhLS0gRC0xIHRleHQgLS0+CiAgPHRleHQgeD0iMjAwIiB5PSIyMTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLCBzZXJpZiIgZm9udC1zaXplPSIxNSIgZmlsbD0iI2MwNjQ3YSIgb3BhY2l0eT0iMC43IiBmb250LXN0eWxlPSJpdGFsaWMiPjbsm5QgMeydvDwvdGV4dD4KICA8dGV4dCB4PSIyMDAiIHk9IjIzMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9Ikdlb3JnaWEsIHNlcmlmIiBmb250LXNpemU9IjEyIiBmaWxsPSIjZDA5MGE4IiBvcGFjaXR5PSIwLjYiPkQgLSAxPC90ZXh0Pgo8L3N2Zz4=";
+
+const ENVELOPE_DATA = [
+  {
+    day: "6월 1일 (D-2)",
+    label: "D-2",
+    letterTitle: "그날의 봄",
+    letterBody: "처음 당신 손을 잡던 날,\n세상이 온통 분홍빛이었어요.\n\n그 순간부터 내 봄은\n언제나 당신과 함께였어요.\n\n— 당신의 사람이",
+    extra: "video",
+    videoId: "DVMryZsNEZU"
+  },
+  {
+    day: "6월 2일 (D-1)",
+    label: "D-1",
+    letterTitle: "내일이 기다려져요",
+    letterBody: "드디어 내일이에요.\n\n당신과 함께한 시간들이\n주마등처럼 스쳐가는 밤이에요.\n\n내일도, 모레도, 영원히\n당신 곁에 있을게요.\n\n사랑해요 💗\n\n— 당신의 전부가",
+    extra: "photo"
+  },
+  {
+    day: "6월 3일 (D-Day) ✦",
+    label: "기념일 💍",
+    letterTitle: "오늘, 우리의 날",
+    letterBody: "오늘 이 날을 기억해요?\n\n그날부터 지금까지\n당신은 내 세상의 전부였어요.\n\n함께해줘서 고마워요.\n앞으로도 쭉, 우리 함께해요.\n\n사랑해요 💗\n\n— 언제나 당신 편",
+    extra: "photo"
+  }
+];
+
+const PETALS = ['🌸','🌺','✿','❀','🌷','💮'];
+let completedDays = [];
+try { completedDays = JSON.parse(localStorage.getItem('ann_test_done') || '[]'); } catch(e){}
+
+// 🎵 Web Audio API 기반 오르골 생성기
+const synthBGM = {
+  ctx: null,
+  isPlaying: false,
+  step: 0,
+  timer: null,
+  sequence: [
+    { bass: 130.81, treble: [329.63, 392.00, 523.25] },
+    { bass: 98.00,  treble: [293.66, 392.00, 493.88] },
+    { bass: 110.07, treble: [329.63, 440.00, 523.25] },
+    { bass: 82.41,  treble: [311.13, 392.00, 493.88] },
+    { bass: 87.31,  treble: [349.23, 440.00, 523.25] },
+    { bass: 130.81, treble: [329.63, 392.00, 523.25] },
+    { bass: 87.31,  treble: [349.23, 440.00, 523.25] },
+    { bass: 98.00,  treble: [293.66, 392.00, 493.88] }
+  ],
+
+  init() {
+    if (!this.ctx) {
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+  },
+
+  playStep() {
+    if (!this.isPlaying) return;
+    this.init();
+    const now = this.ctx.currentTime;
+    const current = this.sequence[this.step % this.sequence.length];
+
+    if (current.bass) {
+      const oscB = this.ctx.createOscillator();
+      const gainB = this.ctx.createGain();
+      oscB.type = 'sine';
+      oscB.frequency.setValueAtTime(current.bass, now);
+      gainB.gain.setValueAtTime(0, now);
+      gainB.gain.linearRampToValueAtTime(0.06, now + 0.3);
+      gainB.gain.exponentialRampToValueAtTime(0.001, now + 2.8);
+      oscB.connect(gainB);
+      gainB.connect(this.ctx.destination);
+      oscB.start(now);
+      oscB.stop(now + 2.9);
+    }
+
+    current.treble.forEach((freq, idx) => {
+      const oscT = this.ctx.createOscillator();
+      const gainT = this.ctx.createGain();
+      oscT.type = 'triangle';
+      
+      const noteStart = now + idx * 0.25;
+      oscT.frequency.setValueAtTime(freq, noteStart);
+
+      gainT.gain.setValueAtTime(0, noteStart);
+      gainT.gain.linearRampToValueAtTime(0.03, noteStart + 0.05);
+      gainT.gain.exponentialRampToValueAtTime(0.001, noteStart + 1.8);
+
+      oscT.connect(gainT);
+      gainT.connect(this.ctx.destination);
+      oscT.start(noteStart);
+      oscT.stop(noteStart + 1.9);
+    });
+
+    this.step++;
+    this.timer = setTimeout(() => this.playStep(), 2400);
+  },
+
+  start() {
+    this.init();
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+    if (!this.isPlaying) {
+      this.isPlaying = true;
+      this.playStep();
+    }
+  },
+
+  stop() {
+    this.isPlaying = false;
+    if (this.timer) clearTimeout(this.timer);
+  }
+};
+
+let musicStarted = false;
+const audioBtn = document.getElementById('audio-btn');
+
+function toggleBGM() {
+  if (synthBGM.isPlaying) {
+    synthBGM.stop();
+    audioBtn.classList.remove('playing');
+    audioBtn.textContent = '🔇';
+  } else {
+    synthBGM.start();
+    audioBtn.classList.add('playing');
+    audioBtn.textContent = '🎵';
+  }
+}
+
+function startMusicOnFirstClick() {
+  if (!musicStarted) {
+    synthBGM.start();
+    audioBtn.classList.add('playing');
+    audioBtn.textContent = '🎵';
+    musicStarted = true;
+    document.removeEventListener('click', startMusicOnFirstClick);
+  }
+}
+document.addEventListener('click', startMusicOnFirstClick);
+
+function saveDone(i) {
+  if (!completedDays.includes(i)) completedDays.push(i);
+  try { localStorage.setItem('ann_test_done', JSON.stringify(completedDays)); } catch(e){}
+}
+
+function resetAll() {
+  completedDays = [];
+  try { localStorage.removeItem('ann_test_done'); } catch(e){}
+  renderMain();
+}
+
+function renderMain() {
+  const row = document.getElementById('envelope-row');
+  row.innerHTML = '';
+  ENVELOPE_DATA.forEach((d, i) => {
+    const done = completedDays.includes(i);
+    const card = document.createElement('div');
+    card.className = 'envelope-card' + (done ? ' done' : '');
+    card.innerHTML =
+      '<div class="env-img-wrap">' +
+        '<img src="' + ENVELOPE_IMG + '" alt="봉투" />' +
+        '<span class="env-overlay">' + (done ? '✅' : '💌') + '</span>' +
+        (done ? '<div class="env-check-badge">✓</div>' : '') +
+      '</div>' +
+      '<div class="env-date">' + d.day + '</div>' +
+      '<div class="env-label">' + d.label + '</div>';
+    card.onclick = () => showReveal(i);
+    row.appendChild(card);
+  });
+
+  const allDone = completedDays.length >= ENVELOPE_DATA.length;
+  const note = document.getElementById('date-note');
+  note.innerHTML = allDone
+    ? '세 개의 봉투를 모두 열었어요 💗<br><button onclick="showEnding()" style="background:none;border:none;color:#c0647a;cursor:pointer;font-family:inherit;font-size:0.8rem;text-decoration:underline;margin-top:0.4rem;">엔딩 보기 ✨</button>'
+    : '탭해서 봉투를 열어보세요 💌';
+}
+
+function showMain() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-main').classList.add('active');
+  renderMain();
+}
+
+function showReveal(i) {
+  saveDone(i);
+  const d = ENVELOPE_DATA[i];
+  document.getElementById('reveal-badge').textContent = d.label + ' 열림 ✦';
+  document.getElementById('letter-title').textContent = d.letterTitle;
+  document.getElementById('letter-body').textContent = d.letterBody;
+
+  const extra = document.getElementById('reveal-extra');
+  extra.innerHTML = '';
+
+  if (d.extra === 'video' && d.videoId) {
+    extra.innerHTML =
+      '<div class="video-wrap">' +
+        '<iframe src="https://www.youtube.com/embed/' + d.videoId + '?rel=0&modestbranding=1" allowfullscreen></iframe>' +
+      '</div>';
+  } else if (d.extra === 'photo') {
+    let saved = null;
+    try { saved = localStorage.getItem('ann_test_photo_' + i); } catch(e){}
+    const label = document.createElement('label');
+    label.className = 'photo-placeholder';
+    label.setAttribute('for', 'photo-upload-' + i);
+    label.innerHTML = saved
+      ? '<img src="' + saved + '" />'
+      : '<span class="photo-icon">📷</span><span class="photo-label">사진을 추가하려면 탭하세요</span>';
+    const input = document.createElement('input');
+    input.type = 'file'; input.accept = 'image/*'; input.id = 'photo-upload-' + i;
+    input.onchange = function(e) {
+      const file = e.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        try { localStorage.setItem('ann_test_photo_' + i, ev.target.result); } catch(e){}
+        label.innerHTML = '<img src="' + ev.target.result + '" />';
+      };
+      reader.readAsDataURL(file);
+    };
+    extra.appendChild(label);
+    extra.appendChild(input);
+  }
+
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-reveal').classList.add('active');
+}
+
+function showEnding() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-ending').classList.add('active');
+}
+
+function spawnPetal() {
+  const c = document.getElementById('petals-container');
+  const p = document.createElement('div');
+  p.className = 'petal';
+  p.textContent = PETALS[Math.floor(Math.random() * PETALS.length)];
+  p.style.left = Math.random() * 100 + '%';
+  const dur = 5 + Math.random() * 5;
+  const delay = Math.random() * 3;
+  p.style.animation = 'petalFall ' + dur + 's ' + delay + 's linear';
+  p.style.fontSize = (10 + Math.random() * 9) + 'px';
+  c.appendChild(p);
+  setTimeout(() => { if (p.parentNode) p.parentNode.removeChild(p); }, (dur + delay + 1) * 1000);
+}
+for (let i = 0; i < 14; i++) setTimeout(spawnPetal, i * 500);
+setInterval(spawnPetal, 1100);
+
+renderMain();
+</script>
+</body>
+</html>
