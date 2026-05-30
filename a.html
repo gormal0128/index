@@ -30,7 +30,6 @@ body {
   transition: background 0.3s;
 }
 
-/* 📱 좌우 여백을 줄여 모바일 화면을 더 넓게 쓰도록 수정 */
 .screen { display: none; padding: 2.5rem 0.8rem; position: relative; z-index: 1; min-height: 100vh; flex-direction: column; align-items: center; justify-content: center; }
 .screen.active { display: flex; }
 .main-title { font-family: 'Playfair Display', serif; font-style: italic; font-size: 2.2rem; color: #c0647a; text-align: center; margin-bottom: 0.3rem; margin-top: 1.5rem; }
@@ -52,13 +51,11 @@ body {
 @keyframes revealIn { from { opacity: 0; transform: scale(0.72) translateY(24px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 .reveal-day-badge { background: #c0647a; color: white; font-size: 0.72rem; padding: 5px 16px; border-radius: 20px; margin-bottom: 1.2rem; letter-spacing: 0.1em; }
 
-/* ✉️ 편지 카드 최대 너비 확장 */
 .letter-card { background: white; border: 1px solid #f0d0da; border-radius: 18px; padding: 1.8rem 1.4rem; width: 100%; max-width: 440px; box-shadow: 0 8px 36px rgba(192,100,122,0.12); position: relative; }
 .letter-card::before { content: '❝'; font-family: 'Playfair Display', serif; font-size: 3rem; color: #f0d0da; position: absolute; top: 0.5rem; left: 1rem; line-height: 1; }
 .letter-title { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.2rem; color: #c0647a; text-align: center; margin-bottom: 1rem; padding-top: 0.6rem; }
 .letter-body { font-size: 0.86rem; color: #5a3545; line-height: 2.1; text-align: center; white-space: pre-line; }
 
-/* 📺 영상 영역 시원하게 확대 및 상하 짤림 방지 */
 #reveal-extra { width: 100%; max-width: 440px; display: flex; flex-direction: column; align-items: center; }
 .video-wrap { 
   width: 100%; 
@@ -66,7 +63,7 @@ body {
   border-radius: 14px; 
   overflow: hidden; 
   box-shadow: 0 6px 24px rgba(192,100,122,0.15); 
-  aspect-ratio: 16 / 10.5; /* 플레이어 상하 메뉴 바 공간을 고려해 세로 크기를 확보 */
+  aspect-ratio: 16 / 10.5; 
   position: relative; 
   background: #000; 
 }
@@ -150,9 +147,10 @@ const ENVELOPE_DATA = [
   {
     day: "6월 1일 (D-1)",
     label: "D-1",
-    letterTitle: "내일이 기다려져요",
-    letterBody: "드디어 내일이에요.\n\n당신과 함께한 시간들이\n주마등처럼 스쳐가는 밤이에요.\n\n내일도, 모레도, 영원히\n당신 곁에 있을게요.\n\n사랑해요 💗\n\n— 당신의 전부가",
-    extra: "photo"
+    letterTitle: "건강합시다.",
+    letterBody: "그동안 행복했던 시간이 참 많았어.\n아래 영상은 1년전 결혼기념일에 \n일본다녀온거야!\n\n이렇게 행복하게 오래 오래\n지내기 위해 우리 모두 \n건강하자\nㅋㅋ",
+    extra: "video",
+    videoId: "1vunvyMVDk_d_9o62Tuyc-Bh5lkvvk9ge"
   },
   {
     day: "6월 2일 (D-Day) ✦",
