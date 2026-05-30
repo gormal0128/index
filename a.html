@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>우리의 이야기 💌</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Noto+Serif+KR:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght=0,400;0,600;1,400&family=Noto+Serif+KR:wght=300;400;600&display=swap" rel="stylesheet">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
@@ -22,23 +22,15 @@ body {
   90%  { opacity: 0.5; }
   100% { opacity: 0; transform: translateY(110vh) rotate(360deg); }
 }
-.test-banner {
-  position: fixed; top: 0; left: 0; right: 0;
-  background: #757575; color: white;
-  text-align: center; font-size: 0.75rem;
-  padding: 6px; z-index: 100; letter-spacing: 0.05em;
-  transition: background 0.3s;
-}
 .screen { display: none; padding: 2.5rem 1.5rem; position: relative; z-index: 1; min-height: 100vh; flex-direction: column; align-items: center; justify-content: center; }
 .screen.active { display: flex; }
-.main-title { font-family: 'Playfair Display', serif; font-style: italic; font-size: 2.2rem; color: #c0647a; text-align: center; margin-bottom: 0.3rem; margin-top: 1.5rem; }
+.main-title { font-family: 'Playfair Display', serif; font-style: italic; font-size: 2.2rem; color: #c0647a; text-align: center; margin-bottom: 0.3rem; margin-top: 1.5rem; cursor: pointer; user-select: none; }
 .main-subtitle { font-size: 0.8rem; color: #a07090; text-align: center; letter-spacing: 0.12em; margin-bottom: 2.5rem; }
 .envelope-row { display: flex; gap: 1.4rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2rem; }
 .envelope-card { width: 140px; cursor: pointer; text-align: center; transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1); position: relative; }
 .envelope-card:hover { transform: translateY(-7px) scale(1.05); }
 .envelope-card.done .env-img-wrap img { filter: hue-rotate(100deg) saturate(0.6); }
-.envelope-card.locked { opacity: 0.6; }
-.envelope-card.locked .env-img-wrap img { filter: grayscale(0.6) contrast(0.8); }
+.envelope-card.locked { opacity: 0.8; }
 .env-img-wrap { width: 130px; height: 92px; margin: 0 auto 0.6rem; position: relative; }
 .env-img-wrap img { width: 100%; height: 100%; object-fit: contain; }
 .env-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.5rem; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.12)); }
@@ -70,32 +62,22 @@ input[type="file"] { display: none; }
 .ending-msg { font-size: 0.85rem; color: #a07090; text-align: center; line-height: 2.1; max-width: 300px; margin-bottom: 1.5rem; }
 .hearts-row { font-size: 1.6rem; letter-spacing: 0.5rem; margin-bottom: 1.5rem; animation: heartBeat 1.8s ease-in-out infinite; }
 @keyframes heartBeat { 0%,100%{transform:scale(1);} 50%{transform:scale(1.12);} }
-
-/* 🔒 관리자 모드 스타일 */
-.admin-wrap { margin-top: 1.5rem; display: flex; gap: 0.4rem; align-items: center; justify-content: center; }
-.admin-input { padding: 0.45rem 0.8rem; border: 1px solid #d0a0b0; border-radius: 20px; font-family: inherit; font-size: 0.75rem; text-align: center; width: 110px; outline: none; }
-.admin-btn { background: #c0647a; color: white; border: none; border-radius: 20px; padding: 6px 14px; font-size: 0.75rem; cursor: pointer; font-family: inherit; transition: background 0.2s; }
-.admin-btn:hover { background: #e87a9a; }
 </style>
 </head>
 <body>
 
-<div class="test-banner" id="status-banner">🔒 날짜별 잠금 모드 작동 중</div>
 <div id="petals-container"></div>
 
+<!-- MAIN -->
 <div id="screen-main" class="screen active">
-  <div class="main-title">우리의 이야기</div>
+  <div class="main-title" onclick="trackAdminClicks()">우리의 이야기</div>
   <div class="main-subtitle">✦ &nbsp; Our Love Story &nbsp; ✦</div>
   <div class="envelope-row" id="envelope-row"></div>
   <div class="date-note" id="date-note">탭해서 봉투를 열어보세요 💌</div>
   <button class="reset-btn" onclick="resetAll()">🔄 처음부터 다시 보기</button>
-  
-  <div class="admin-wrap" id="admin-area">
-    <input type="password" id="admin-pw" class="admin-input" placeholder="관리자 비밀번호">
-    <button class="admin-btn" onclick="checkAdmin()">잠금 해제</button>
-  </div>
 </div>
 
+<!-- REVEAL -->
 <div id="screen-reveal" class="screen">
   <div class="reveal-day-badge" id="reveal-badge"></div>
   <div class="letter-card reveal-anim">
@@ -106,6 +88,7 @@ input[type="file"] { display: none; }
   <button class="reveal-btn" onclick="showMain()">봉투 목록으로 →</button>
 </div>
 
+<!-- ENDING -->
 <div id="screen-ending" class="screen">
   <div class="hearts-row">🌸 💗 🌸</div>
   <div class="ending-glow">사랑해요,<br>영원히</div>
@@ -115,6 +98,202 @@ input[type="file"] { display: none; }
 </div>
 
 <script>
-const ENVELOPE_IMG = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMjgwIiB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI4MCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImVudkdyYWQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZmZmMGY1Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I2ZkZThmMCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZmxhcEdyYWQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZjljY2Q4Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I2YwYThiZSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ic2VhbEdyYWQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZTg3YTlhIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I2MwNTQ3YSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxmaWx0ZXIgaWQ9InNoYWRvdyI+CiAgICAgIDxmZURyb3BTaGFkb3cgZHg9IjAiIGR5PSI0IiBzdGREZXZpYXRpb249IjgiIGZsb29kLWNvbG9yPSIjYzA2NDdhIiBmbG9vZC1vcGFjaXR5PSIwLjE4Ii8+CiAgICA8L2ZpbHRlcj4KICA8L2RlZnM+CgogIDwhLS0gZW52ZWxvcGUgYm9keSAtLT4KICA8cmVjdCB4PSIyMCIgeT0iNjAiIHdpZHRoPSIzNjAiIGhlaWdodD0iMjAwIiByeD0iMTIiIGZpbGw9InVybCgjZW52R3JhZCkiIHN0cm9rZT0iI2U4YjRjOCIgc3Ryb2tlLXdpZHRoPSIxLjUiIGZpbHRlcj0idXJsKCNzaGFkb3cpIi8+CgogIDwhLS0gYm90dG9tIGZvbGQgbGluZXMgLS0+CiAgPGxpbmUgeDE9IjIwIiB5MT0iMjYwIiB4Mj0iMjAwIiB5Mj0iMTYwIiBzdHJva2U9IiNmMGMwZDAiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iMC42Ii8+CiAgPGxpbmUgeDE9IjM4MCIgeTE9IjI2MCIgeDI9IjIwMCIgeTI9IjE2MCIgc3Ryb2tlPSIjZjBjMGQwIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9IjAuNiIvPgoKICA8IS0tIHNpZGUgZm9sZHMgLS0+CiAgPGxpbmUgeDE9IjIwIiB5MT0iNjAiIHgyPSIyMDAiIHkyPSIxNjAiIHN0cm9rZT0iI2YwYzBkMCIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIwLjUiLz4KICA8bGluZSB4MT0iMzgwIiB5MT0iNjAiIHgyPSIyMDAiIHkyPSIxNjAiIHN0cm9rZT0iI2YwYzBkMCIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIwLjUiLz4KCiAgPCEtLSBmbGFwIChvcGVuKSAtLT4KICA8cG9seWdvbiBwb2ludHM9IjIwLDYwIDM4MCw2MCAyMDAsMTY1IiBmaWxsPSJ1cmwoI2ZsYXBHcmFkKSIgc3Ryb2tlPSIjZThiNGM4IiBzdHJva2Utd2lkdGg9IjEuNSIvPgoKICA8IS0tIGZsYXAgaW5uZXIgc2hhZG93IGxpbmUgLS0+CiAgPGxpbmUgeDE9IjIwIiB5MT0iNjAiIHgyPSIzODAiIHkyPSI2MCIgc3Ryb2tlPSIjZThhMGI4IiBzdHJva2Utd2lkdGg9IjEuNSIvPgoKICA8IS0tIHdheCBzZWFsIGNpcmNsZSAtLT4KICA8Y2lyY2xlIGN4PSIyMDAiIGN5PSIxNDgiIHI9IjI4IiBmaWxsPSJ1cmwoI3NlYWxHcmFkKSIgc3Ryb2tlPSIjZmZmMGY1IiBzdHJva2Utd2lkdGg9IjIuNSIgZmlsdGVyPSJ1cmwoI3NoYWRvdykiLz4KCiAgPCEtLSBoZWFydCBpbiBzZWFsIC0tPgogIDxwYXRoIGQ9Ik0yMDAgMTU4IEMyMDAgMTU4IDE4NSAxNDcgMTg1IDE0MCBDMTg1IDEzNSAxOTAgMTMyIDE5NSAxMzUgQzE5NyAxMzYgMTk5IDEzOCAyMDAgMTQwIEMyMDEgMTM4IDIwMyAxMzYgMjA1IDEzNSBDMjEwIDEzMiAyMTUgMTM1IDIxNSAxNDAgQzIxNSAxNDcgMjAwIDE1OCAyMDAgMTU4WiIgZmlsbD0id2hpdGUiIG9wYWNpdHk9IjAuOTUiLz4KCiAgPCEtLSBzbWFsbCBkZWNvcmF0aXZlIGRvdHMgb24gZW52ZWxvcGUgLS0+CiAgPGNpcmNsZSBjeD0iNjAiIGN5PSIyMjAiIHI9IjIuNSIgZmlsbD0iI2YwYjBjOCIgb3BhY2l0eT0iMC41Ii8+CiAgPGNpcmNsZSBjeD0iODAiIGN5PSIyMzUiIHI9IjEuOCIgZmlsbD0iI2YwYjBjOCIgb3BhY2l0eT0iMC40Ii8+CiAgPGNpcmNsZSBjeD0iMzIwIiBjeT0iMjE1IiByPSIyLjUiIGZpbGw9IiNmMGIwYzgiIG9wYWNpdHk9IjAuNSIvPgogIDxjaXJjbGUgY3g9IjM0MCIgY3k9IjIzMiIgcj0iMS44IiBmaWxsPSIjZjBiMGM4IiBvcGFjaXR5PSIwLjQiLz4KCiAgPCEtLSB0b3AgcmliYm9uIGRlY29yYXRpb24gLS0+CiAgPHBhdGggZD0iTTE3MCAzMCBRMjAwIDEwIDIzMCAzMCBRMjAwIDUwIDE3MCAzMFoiIGZpbGw9IiNmOWNjZDgiIG9wYWNpdHk9IjAuNyIvPgogIDxjaXJjbGUgY3g9IjIwMCIgY3k9IjMwIiByPSI1IiBmaWxsPSIjZTg3YTlhIi8+CgogIDwhLS0gRC0xIHRleHQgLS0+CiAgPHRleHQgeD0iMjAwIiB5PSIyMTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLCBzZXJpZiIgZm9udC1zaXplPSIxNSIgZmlsbD0iI2MwNjQ3YSIgb3BhY2l0eT0iMC43IiBmb250LXN0eWxlPSJpdGFsaWMiPjbsm5QgMeydvDwvdGV4dD4KICA8dGV4dCB4PSIyMDAiIHk9IjIzMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9Ikdlb3JnaWEsIHNlcmlmIiBmb250LXNpemU9IjEyIiBmaWxsPSIjZDA5MGE4IiBvcGFjaXR5PSIwLjYiPkQgLSAxPC90ZXh0Pgo8L3N2Zz4=";
+const ENVELOPE_IMG = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMjgwIiB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI4MCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImVudkdyYWQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZmZmMGY1Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I2ZkZThmMCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZmxhcEdyYWQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZjljY2Q4Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I2YwYThiZSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ic2VhbEdyYWQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZTg3YTlhIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I2MwNTQ3YSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxmaWx0ZXIgaWQ9InNoYWRvdyI+CiAgICAgIDxmZURyb3BTaGFkb3cgZHg9IjAiIGR5PSI0IiBzdGREZXZpYXRpb249IjgiIGZsb29kLWNvbG9yPSIjYzA2NDdhIiBmbG9vZC1vcGFjaXR5PSIwLjE4Ii8+CiAgICA8L2ZpbHRlcj4KICA8L2RlZnM+CgogIDwhLS0gZW52ZWxvcGUgYm9keSAtLT4KICA8cmVjdCB4PSIyMCIgeT0iNjAiIHdpZHRoPSIzNjAiIGhlaWdodD0iMjAwIiByeD0iMTIiIGZpbGw9InVybCgjZW52R3JhZCkiIHN0cm9rZT0iI2U4YjRjOCIgc3Ryb2tlLXdpZHRoPSIxLjUiIGZpbHRlcj0idXJsKCNzaGFkb3cpIi8+CgogIDwhLS0gYm90dG9tIGZvbGQgbGluZXMgLS0+CiAgPGxpbmUgeDE9IjIwIiB5MT0iMjYwIiB4Mj0iMjAwIiB5Mj0iMTYwIiBzdHJva2U9IiNmMGMwZDAiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iMC42Ii8+CiAgPGxpbmUgeDE9IjM4MCIgeTE9IjI2MCIgeDI9IjIwMCIgeTI9IjE2MCIgc3Ryb2tlPSIjZjBjMGQwIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9IjAuNiIvPgoKICA8IS0tIHNpZGUgZm9sZHMgLS0+CiAgPGxpbmUgeDE9IjIwIiB5MT0iNjAiIHgyPSIyMDAiIHkyPSIxNjAiIHN0cm9rZT0iI2YwYzBkMCIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIwLjUiLz4KICA8bGluZSB4MT0iMzgwIiB5MT0iNjAiIHgyPSIyMDAiIHkyPSIxNjAiIHN0cm9rZT0iI2YwYzBkMCIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIwLjUiLz4KCiAgPCEtLSBmbGFwIChvcGVuKSAtLT4KICA8cG9seWdvbiBwb2ludHM9IjIwLDYwIDM4MCw2MCAyMDAsMTY1IiBmaWxsPSJ1cmwoI2ZsYXBHcmFkKSIgc3Ryb2tlPSIjZThiNGM4IiBzdHJva2Utd2lkdGg9IjEuNSIvPgoKICA8IS0tIGZsYXAgaW5uZXIgc2hhZG93IGxpbmUgLS0+CiAgPGxpbmUgeDE9IjIwIiB5MT0i6MCiIHgyPSIzODAiIHkyPSI2MCIgc3Ryb2tlPSIjZThhMGI4IiBzdHJva2Utd2lkdGg9IjEuNSIvPgoKICA8IS0tIHdheCBzZWFsIGNpcmNsZSAtLT4KICA8Y2lyY2xlIGN4PSIyMDAiIGN5PSIxNDgiIHI9IjI4IiBmaWxsPSJ1cmwoI3NlYWxHcmFkKSIgc3Ryb2tlPSIjZmZmMGY1IiBzdHJva2Utd2lkdGg9IjIuNSIgZmlsdGVyPSJ1cmwoI3NoYWRvdykiLz4KCiAgPCEtLSBoZWFydCBpbiBzZWFsIC0tPgogIDxwYXRoIGQ9Ik0yMDAgMTU4IEMyMDAgMTU4IDE4NSAxNDcgMTg1IDE0MCBDMTg1IDEzNSAxOTAgMTMyIDE5NSAxMzUgQzE5NyAxMzYgMTk5IDEzOCAyMDAgMTQwIEMyMDEgMTM4IDIwMyAxMzYgMjA1IDEzOSBDMjEwIDEzMiAyMTUgMTM1IDIxNSAxNDAgQzIxNSAxNDcgMjAwIDE1OCAyMDAgMTU4WiIgZmlsbD0id2hpdGUiIG9wYWNpdHk9IjAuOTUiLz4KCiAgPCEtLSBzbWFsbCBkZWNvcmF0aXZlIGRvdHMgb24gZW52ZWxvcGUgLS0+CiAgPGNpcmNsZSBjeD0iNjAiIGN5PSIyMjAiIHI9IjIuNSIgZmlsbD0iI2YwYjBjOCIgb3BhY2l0eT0iMC41Ii8+CiAgPGNpcmNsZSBjeD0iODAiIGN5PSIyMzUiIHI9IjEuOCIgZmlsbD0iI2YwYjBjOCIgb3BhY2l0eT0iMC40Ii8+CiAgPGNpcmNsZSBjeD0iMzIwIiBjeT0iMjE1IiByPSIyLjUiIGZpbGw9IiNmMGIwYzgiIG9wYWNpdHk9IjAuNSIvPgogIDxjaXJjbGUgY3g9IjM0MCIgY3k9IjIzMiIgcj0iMS44IiBmaWxsPSIjZjBiMGM4IiBvcGFjaXR5PSIwLjQiLz4KCiAgPCEtLSB0b3AgcmliYm9uIGRlY29yYXRpb24gLS0+CiAgPHBhdGggZD0iTTE3MCAzMCBRMjAwIDEwIDIzMCAzMCBRMjAwIDUwIDE3MCAzMFoiIGZpbGw9IiNmOWNjZDgiIG9wYWNpdHk9IjAuNyIvPgogIDxjaXJjbGUgY3g9IjIwMCIgY3k9IjMwIiByPSI1IiBmaWxsPSIjZTg3YTlhIi8+CiAgPCEtLSBELTEgdGV4dCAtLT4KICA8dGV4dCB4PSIyMDAiIHk9IjIxMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9Ikdlb3JnaWEsIHNlcmlmIiBmb250LXNpemU9IjE1IiBmaWxsPSIjYzA2NDdhIiBvcGFjaXR5PSIwLjciIGZvbnQtc3R5bGU9Iml0YWxpYyI+NuyblyAx7J2MPC90ZXh0PgogIDx0ZXh0IHk9IjIzMCIgeD0iMjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iR2VvcmdpYSwgc2VyaWYiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IiNkMDkwYTgiIG9wYWNpdHk9IjAuNiI+RCAtIDE8L3RleHQ+Cjwvc3ZnPg==";
 
-const ENVELOPE_DATA =
+const ENVELOPE_DATA = [
+  {
+    day: "6월 1일 (D-2)",
+    label: "D-2",
+    dateTarget: "2026-06-01",
+    letterTitle: "그날의 봄",
+    letterBody: "처음 당신 손을 잡던 날,\n세상이 온통 분홍빛이었어요.\n\n그 순간부터 내 봄은\n언제나 당신과 함께였어요.\n\n— 당신의 사람이",
+    extra: "video",
+    videoUrl: "https://drive.google.com/file/d/1XoQbcseFy8Yd6M84vrhBkwIH6SRyWSxD/preview"
+  },
+  {
+    day: "6월 2일 (D-1)",
+    label: "D-1",
+    dateTarget: "2026-06-02",
+    letterTitle: "내일이 기다려져요",
+    letterBody: "드디어 내일이에요.\n\n당신과 함께한 시간들이\n주마등처럼 스쳐가는 밤이에요.\n\n내일도, 모레도, 영원히\n당신 곁에 있을게요.\n\n사랑해요 💗\n\n— 당신의 전부가",
+    extra: "photo"
+  },
+  {
+    day: "6월 3일 (D-Day) ✦",
+    label: "기념일 💍",
+    dateTarget: "2026-06-03",
+    letterTitle: "오늘, 우리의 날",
+    letterBody: "오늘 이 날을 기억해요?\n\n그날부터 지금까지\n당신은 내 세상의 전부였어요.\n\n함께해줘서 고마워요.\n앞으로도 쭉, 우리 함께해요.\n\n사랑해요 💗\n\n— 언제나 당신 편",
+    extra: "photo"
+  }
+];
+
+const PETALS = ['🌸','🌺','✿','❀','🌷','💮'];
+let completedDays = [];
+let isAdmin = false;
+let adminClickCount = 0;
+
+// URL 파라미터 확인 (?admin=true 인 경우 디버깅용 우회 허용)
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('admin') === 'true') {
+  isAdmin = true;
+}
+
+try { completedDays = JSON.parse(localStorage.getItem('ann_prod_done') || '[]'); } catch(e){}
+
+function trackAdminClicks() {
+  adminClickCount++;
+  if (adminClickCount >= 5) {
+    isAdmin = true;
+    alert("⚙️ 관리자 모드가 활성화되었습니다. 모든 날짜의 봉투를 미리 열어볼 수 있습니다.");
+    adminClickCount = 0;
+    renderMain();
+  }
+}
+
+function checkDateAvailable(targetDateStr) {
+  if (isAdmin) return true;
+  
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const targetDate = new Date(targetDateStr);
+  targetDate.setHours(0, 0, 0, 0);
+  
+  return today >= targetDate;
+}
+
+function saveDone(i) {
+  if (!completedDays.includes(i)) completedDays.push(i);
+  try { localStorage.setItem('ann_prod_done', JSON.stringify(completedDays)); } catch(e){}
+}
+
+function resetAll() {
+  if(confirm("모든 열람 기록과 업로드한 사진을 초기화할까요?")) {
+    completedDays = [];
+    try {
+      localStorage.removeItem('ann_prod_done');
+      localStorage.removeItem('ann_test_photo_1');
+      localStorage.removeItem('ann_test_photo_2');
+    } catch(e){}
+    renderMain();
+  }
+}
+
+function renderMain() {
+  const row = document.getElementById('envelope-row');
+  row.innerHTML = '';
+  
+  ENVELOPE_DATA.forEach((d, i) => {
+    const done = completedDays.includes(i);
+    const isAvailable = checkDateAvailable(d.dateTarget);
+    
+    const card = document.createElement('div');
+    card.className = 'envelope-card' + (done ? ' done' : '') + (!isAvailable ? ' locked' : '');
+    
+    card.innerHTML =
+      '<div class="env-img-wrap">' +
+        '<img src="' + ENVELOPE_IMG + '" alt="봉투" style="' + (!isAvailable ? 'filter: grayscale(0.6) opacity(0.7);' : '') + '" />' +
+        '<span class="env-overlay">' + (done ? '✅' : (!isAvailable ? '🔒' : '💌')) + '</span>' +
+        (done ? '<div class="env-check-badge">✓</div>' : '') +
+      '</div>' +
+      '<div class="env-date">' + d.day + '</div>' +
+      '<div class="env-label">' + d.label + '</div>';
+      
+    card.onclick = () => {
+      if (!isAvailable) {
+        alert("🔒 아직 열 수 없는 봉투입니다!\n" + d.day + "에 공개됩니다. 조금만 기다려주세요 🌸");
+        return;
+      }
+      showReveal(i);
+    };
+    row.appendChild(card);
+  });
+
+  const allDone = completedDays.length >= ENVELOPE_DATA.length;
+  const note = document.getElementById('date-note');
+  
+  if (isAdmin) {
+    note.innerHTML = "⚙️ 현재 관리자 모드로 모든 봉투가 개방되었습니다.";
+  } else {
+    note.innerHTML = allDone
+      ? '세 개의 봉투를 모두 열었어요 💗<br><button onclick="showEnding()" style="background:none;border:none;color:#c0647a;cursor:pointer;font-family:inherit;font-size:0.8rem;text-decoration:underline;margin-top:0.4rem;">엔딩 보기 ✨</button>'
+      : '지정된 날짜가 되면 봉투를 열 수 있어요 💌';
+  }
+}
+
+function showMain() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-main').classList.add('active');
+  renderMain();
+}
+
+function showReveal(i) {
+  saveDone(i);
+  const d = ENVELOPE_DATA[i];
+  document.getElementById('reveal-badge').textContent = d.label + ' 열림 ✦';
+  document.getElementById('letter-title').textContent = d.letterTitle;
+  document.getElementById('letter-body').textContent = d.letterBody;
+
+  const extra = document.getElementById('reveal-extra');
+  extra.innerHTML = '';
+
+  if (d.extra === 'video' && d.videoUrl) {
+    extra.innerHTML =
+      '<div class="video-wrap">' +
+        '<iframe src="' + d.videoUrl + '" allow="autoplay; encrypted-media" allowfullscreen></iframe>' +
+      '</div>';
+  } else if (d.extra === 'photo') {
+    let saved = null;
+    try { saved = localStorage.getItem('ann_test_photo_' + i); } catch(e){}
+    const label = document.createElement('label');
+    label.className = 'photo-placeholder';
+    label.setAttribute('for', 'photo-upload-' + i);
+    label.innerHTML = saved
+      ? '<img src="' + saved + '" />'
+      : '<span class="photo-icon">📷</span><span class="photo-label">우리의 추억 사진을 추가해보세요</span>';
+    const input = document.createElement('input');
+    input.type = 'file'; input.accept = 'image/*'; input.id = 'photo-upload-' + i;
+    input.onchange = function(e) {
+      const file = e.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        try { localStorage.setItem('ann_test_photo_' + i, ev.target.result); } catch(e){}
+        label.innerHTML = '<img src="' + ev.target.result + '" />';
+      };
+      reader.readAsDataURL(file);
+    };
+    extra.appendChild(label);
+    extra.appendChild(input);
+  }
+
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-reveal').classList.add('active');
+}
+
+function showEnding() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-ending').classList.add('active');
+}
+
+function spawnPetal() {
+  const c = document.getElementById('petals-container');
+  if(!c) return;
+  const p = document.createElement('div');
+  p.className = 'petal';
+  p.textContent = PETALS[Math.floor(Math.random() * PETALS.length)];
+  p.style.left = Math.random() * 100 + '%';
+  const dur = 5 + Math.random() * 5;
+  const delay = Math.random() * 3;
+  p.style.animation = 'petalFall ' + dur + 's ' + delay + 's linear';
+  p.style.fontSize = (10 + Math.random() * 9) + 'px';
+  c.appendChild(p);
+  setTimeout(() => { if (p.parentNode) p.parentNode.removeChild(p); }, (dur + delay + 1) * 1000);
+}
+for (let i = 0; i < 14; i++) setTimeout(spawnPetal, i * 500);
+setInterval(spawnPetal, 1100);
+
+renderMain();
+</script>
+</body>
+</html>
