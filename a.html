@@ -253,10 +253,13 @@ function showReveal(i) {
   extra.innerHTML = '';
 
   if (d.extra === 'video' && d.videoId) {
-    // 구글 드라이브 영상 연동 iframe
+    // 구글 드라이브 영상 연동 iframe + 링크 추가
     extra.innerHTML =
       '<div class="video-wrap">' +
         '<iframe src="https://drive.google.com/file/d/' + d.videoId + '/preview" allowfullscreen></iframe>' +
+      '</div>' +
+      '<div style="margin-top: 12px; text-align: center;">' +
+        '<a href="https://drive.google.com/file/d/' + d.videoId + '/view?usp=drivesdk" target="_blank" style="color: #c0647a; font-size: 0.8rem; text-decoration: underline;">🔗 영상 원본 링크 열기</a>' +
       '</div>';
   } else if (d.extra === 'photo') {
     let saved = null;
